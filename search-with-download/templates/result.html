@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+
+<html>
+	<head>
+		 <meta charset="UTF-8">
+		 <title>~~ Search info from hklit ~~</title>
+		 <script type="text/javascript">
+             function checkSpcialChar(event){
+                if(!((event.keyCode >= 65) && (event.keyCode <= 90) || (event.keyCode >= 97) && (event.keyCode <= 122) || (event.keyCode >= 48) && (event.keyCode <= 57))){
+                   event.returnValue = false;
+                   return;
+                }
+                event.returnValue = true;
+             }
+          </script>
+		 <link rel= "stylesheet" type="text/css" href="{{ url_for('static',filename='css/style_2019_11_05_09_30.css') }}">
+	</head>
+	<body>
+    	<div id='wrapper'>
+    	
+    		<div class=top-container>
+    			<h1>Search Page</h1>
+    		</div>
+    		
+    		<div id='content'>
+        		<form class = "input_form" method="POST" >
+        			 搜尋內容: (Please do not include special character such as *, (, ), + ,...... here. Only , and - is allowed!<br> <input type="text" name="author_name" minlength="2" onkeypress="return checkSpcialChar(event)" required><br><br>
+        			 Where to search:<br> 
+        			 <input type="radio" name="search_field" value="author" checked required>Author name<br> 
+        			 <input type="radio" name="search_field" value="content" required> Title and full text<br><br>
+        			 
+        			 Get statistics?:<br> 
+        			 <input type="radio" name="get_stat" value="T" checked required>Yes<br> 
+        			 <input type="radio" name="get_stat" value="F" required> No<br><br>
+        			 
+        			 Get other name for the author?:<br> 
+        			 <input type="radio" name="get_name_list" value="T" checked required>Yes<br> 
+        			 <input type="radio" name="get_name_list" value="F" required> No<br><br>
+        			 
+        			 Separate result for each author name?:<br> 
+        			 <input type="radio" name="separte_name" value="T" checked required>Yes<br> 
+        			 <input type="radio" name="separte_name" value="F" required> No<br><br>
+        			 
+        			 <input type="submit" value="Submit">
+        		</form>
+        		
+        		<p style="text-align:center">The name you enter is : {{author_name}}
+        		<p style="text-align:center">{{reminder_to_user}}
+        		<p style="text-align:center">All name(s) we search for is(are) : {{all_name_str}}
+        		
+        		<div class="container">
+            		{% for key, tables in dataframe_collection.items() %}	
+            			<div class="div_for_btn">
+            				<button class="btn" onclick="myFunction('{{key}}') ; submitButtonStyle('{{loop.index}}' ); show_stat('{{get_stat}}') ; display_button_for_hide_all()" style="backgroundColor:silver">{{key}}</button>
+            				<p class = 'reminder_of_show' id='{{loop.index}}' style="visibility: hidden;">Showing</p>
+            			</div>
+            		{% endfor %}
+        		</div>
+        		
+        		{% for key, tables in dataframe_collection.items() %}	
+        			<div class=author_name id='{{key}}' style="display:none">
+        				<h1 text-color:gray>{{key}}</h1>
+        					<div class="tablehor">
+        						{{ tables.to_html()|safe }}
+        					</div>
+        				<div class=stat style="text-align:center ; display:none">	
+        					<p>number_of_articles : {{number_of_articles[key]}}</p>
+        					<p>mention_in_title : {{mention_in_title[key]}}</p>
+        					<p>mention_in_fulltext : {{mention_in_fulltext[key]}}</p>
+        				</div>
+        				<a href="/{{key}}/{{field}}/{{separte_name}}"><button> Click to download table as csv</button></a>
+        			</div>
+        		{% endfor %}
+        		
+        		<button onclick="hide_all() ; display_button_for_hide_all()" style="display:none; margin: auto; background-color: silver" id = "hide_all_button" >Hide all</button>
+        	</div>
+    	
+    	
+        	<div id='footer'>
+        		<div style="padding-top:25px">This is the end of the page</div>
+        	</div>
+        
+        </div>
+        
+		<script>
+		
+			var name_list = {{ name_list|tojson }};
+			name_list.sort(function(a, b){return b.length - a.length});
+            console.log(JSON.stringify(name_list, null, '\t'));
+			
+			function myFunction(key) {
+				console.log(key);
+				var x = document.getElementById(key);
+				if (x.style.display === "none") {
+					x.style.display = "block";
+					} else {
+					x.style.display = "none";}
+					}
+			
+			function submitButtonStyle(for_loop_count) {
+				console.log(for_loop_count);
+				var x = document.getElementById(for_loop_count);
+				if (x.style.visibility === "visible") {
+					x.style.visibility = "hidden";
+					} else {
+					x.style.visibility = "visible";}
+        			}
+			
+			function show_stat(get_stat){
+				console.log("Get_stat : ",get_stat);
+				if (get_stat === "T"){
+					var x = document.getElementsByClassName("stat");
+					for (var k=0; k<x.length; k++){
+    					x[k].style.display = "block";}
+    					}
+    				}
+			
+			
+
+			function highlight(text){	
+    			var text_col = document.querySelectorAll('td:nth-child(8)');
+    			var creator_col = document.querySelectorAll('td:nth-child(6)')
+    			var author_col = document.querySelectorAll('td:nth-child(5)')
+    			var col_array = [text_col,creator_col,author_col]	
+				for (var col_count = 0; col_count < col_array.length ; col_count ++){
+					for (var k=0; k<text_col.length ; k++){
+						html = col_array[col_count][k].innerHTML;
+						re = new RegExp(text,'g');
+						if (re.test(html)){
+							html = html.replace(re,'<span class="highlight-text", style="background-color: red">'+text+'</span>');}
+						col_array[col_count][k].innerHTML = html;
+						}
+        			}
+				}
+				
+        	function split_line_for_count(){
+    	        var col_for_count = [document.querySelectorAll('td:nth-child(25)'), document.querySelectorAll('td:nth-child(26)')]	
+            	for (var col=0; col<col_for_count.length; col++){
+                	for (var row=0; row<col_for_count[col].length; row++){
+                    	html = col_for_count[col][row].innerHTML;
+                    	re = new RegExp(';;;','g');
+                    	if (re.test(html)){
+                        	html = html.replace(re,'<br/>');}
+                    	col_for_count[col][row].innerHTML = html;
+                    	}
+                	}
+            	}
+            
+        
+
+            function display_n_char_before_and_after(){
+    		    var col_for_full_text = document.querySelectorAll('td:nth-child(8)')
+                for(var number_of_row = 0; number_of_row < col_for_full_text.length; number_of_row ++){
+                    var return_str = ''
+                    var text_str = col_for_full_text[number_of_row].innerHTML
+                    for(var r = 0; r < name_list.length ; r++){
+                        var name = name_list[r]
+                        var len_of_name = name.length
+                        var char_pos = text_str.indexOf(name)
+                        while(char_pos >= 0){
+                            if (char_pos - 15 >= 0){
+                                var start_pos = char_pos - 15
+                                return_str = return_str + '......' + text_str.substr(start_pos,len_of_name + 30) + '......' +'<br><br>'
+                                }
+                            else{
+                                var start_pos = 0
+                                return_str = return_str + '......' + text_str.substr(start_pos,len_of_name + char_pos + 15) + '......' +'<br><br>'
+                                }
+                            char_pos = text_str.indexOf(name, char_pos + 1)
+                            }
+    					}
+					if(return_str.length > 0){
+						document.querySelectorAll('td:nth-child(8)')[number_of_row].innerHTML = return_str}
+                          
+					else if(text_str.length > 30 + len_of_name){
+						return_str = text_str.substr(0,15) + '......' + text_str.substr(text_str.length - 15) 
+						document.querySelectorAll('td:nth-child(8)')[number_of_row].innerHTML = return_str;}
+    				}
+    			}
+           
+           function checkSpcialChar(event){
+                if(!((event.keyCode >= 65) && (event.keyCode <= 90) || (event.keyCode >= 97) && (event.keyCode <= 122) || (event.keyCode >= 48) && (event.keyCode <= 57) || (event.keyCode >= 44) && (event.keyCode <= 45))){
+                   event.returnValue = false;
+                   return;
+                    }
+                   event.returnValue = true;
+                }
+                    	
+
+            
+			function display_button_for_hide_all(){
+				var x = document.getElementsByClassName('author_name');
+				var y = document.getElementById("hide_all_button")
+				var count_display = 0
+				for (var i = 0; i < x.length ; i ++){
+					if (x[i].style.display === 'block'){
+						count_display = count_display + 1}
+    				}
+				if (count_display > 0){
+					y.style.display = 'block'
+				}else{
+					y.style.display = 'none'
+					}
+    			}
+			
+			function hide_all(){
+				var x = document.getElementsByClassName('author_name');
+				for (var i = 0; i < x.length ; i ++){
+					x[i].style.display = 'none';
+        				}
+				var y = document.getElementsByClassName('reminder_of_show');
+				for (var j = 0; j < y.length ; j++){
+					y[j].style.visibility = 'hidden'
+    				}
+    			}
+			
+			split_line_for_count()
+			display_n_char_before_and_after()
+    		for (var r = 0; r < name_list.length ; r++){
+				key = name_list[r]
+    			highlight(key)
+			}
+		
+		</script>
+		
+	</body>
+</html>
+

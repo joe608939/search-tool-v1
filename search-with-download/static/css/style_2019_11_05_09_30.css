@@ -1,0 +1,115 @@
+html, body{
+    padding : 0;
+    margin : 0;
+    height : 100%
+}
+
+th{
+		text-align: center;
+		background-color : #ffe6cc;
+	}
+
+tr:hover{
+    background-color: #f1f1f1;
+}
+
+#wrapper{
+    min-height: 100%;
+    position: relative;
+}
+
+#content{
+    padding-bottom: 60px;
+    text-align: center;
+}
+
+#footer {
+	width:100%;
+	height: 60px;
+	background-color:#ABB2B9;
+	text-align: center;
+	position: absolute;
+	bottom :0;
+	
+}
+
+table{
+	
+	border-collapse: collapse;
+	
+}
+
+table thead th{
+	position:sticky;
+	top : -1px;
+}
+				
+	.input_form{
+		 border-radius: 10px;
+		 background-color: powderblue;
+		 text-align: center;
+	 	 margin : 30px;
+	 	 padding : 20px;
+	 	 border: 2px solid black;
+		 
+	}
+	input[type=text]:hover{
+		background-color:orange;
+	}
+	.input_form input[type=’text’]:hover{
+		background-color: #fff3e6;
+			}
+		
+	.tablehor {
+		 height: 450px;
+		 overflow: auto;
+         overflow-x: auto;
+		 text-align:center;
+		 font-size:15px;
+    }
+	
+	
+	
+	.author_name{
+		 border: 1px solid yellow;
+		 text-align:center;
+		 border-radius: 10px;
+		 padding: 5px;
+		 margin: 5px;
+	}
+	.top-container {
+		 background-color: #f1f1f1;
+		 padding: 10px;
+		 text-align: center;
+	}
+	
+	.btn {
+		  border: none;
+		  background-color: silver;
+		  padding: 14px 28px;
+		  font-size: 16px;
+		  cursor: pointer;
+		  display: inline-block;
+		}
+	
+	.btn:hover {background: #eee;}
+	
+	.wrapper {
+		text-align: center;
+		align:center ;
+		vertical-align: middle;
+		margin: auto;
+	}
+	.container {
+			width: 90%;
+			text-align:center;
+		}
+	.div_for_btn{
+		width: auto;
+		height:80px;
+		margin: auto;
+		margin-bottom: 20px;
+		display: inline-block;
+	}
+	
+    

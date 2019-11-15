@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+
+<html>
+	<head>
+		 <meta charset="UTF-8">
+		 <title>~~ Search info from hklit ~~</title>
+		 <script type="text/javascript">
+             function checkSpcialChar(event){
+                if(!((event.keyCode >= 65) && (event.keyCode <= 90) || (event.keyCode >= 97) && (event.keyCode <= 122) || (event.keyCode >= 48) && (event.keyCode <= 57))){
+                   event.returnValue = false;
+                   return;
+                }
+                event.returnValue = true;
+             }
+          </script>
+		 <link rel= "stylesheet" type="text/css" href="{{ url_for('static',filename='css/style_2019_10_25_17_36.css') }}">
+	</head>
+	<body>
+		<div class=top-container>
+			<h1>Search Page</h1>
+		</div>
+		<form class = "input_form" method="POST" >
+			 搜尋內容: (Please do not include special character such as *, (, ), + ,...... here. Only , and - is allowed!<br> <input type="text" name="author_name" minlength="2" onkeypress="return checkSpcialChar(event)" required><br><br>
+			 Where to search:<br> 
+			 <input type="radio" name="search_field" value="author" checked required>Author name<br> 
+			 <input type="radio" name="search_field" value="content" required> Title and full text<br><br>
+			 
+			 Get statistics?:<br> 
+			 <input type="radio" name="get_stat" value="T" checked required>Yes<br> 
+			 <input type="radio" name="get_stat" value="F" required> No<br><br>
+			 
+			 Get other name for the author?:<br> 
+			 <input type="radio" name="get_name_list" value="T" checked required>Yes<br> 
+			 <input type="radio" name="get_name_list" value="F" required> No<br><br>
+			 
+			 Separate result for each author name?:<br> 
+			 <input type="radio" name="separte_name" value="T" checked required>Yes<br> 
+			 <input type="radio" name="separte_name" value="F" required> No<br><br>
+			 
+			 <input type="submit" value="Submit">
+		</form>
+		<p style="text-align:center">The name you enter is : {{author_name}}
+		<p style="text-align:center">{{reminder_to_user}}
+		<p style="text-align:center">All name(s) we search for is(are) : {{all_name_str}}
+		<div class="container">
+		{% for key, tables in dataframe_collection.items() %}	
+			<div class="div_for_btn">
+				<button class="btn" onclick="myFunction('{{key}}') ; submitButtonStyle('{{loop.index}}' ); show_stat('{{get_stat}}')" style="backgroundColor:silver">{{key}}</button>
+				<p id='{{loop.index}}' style="visibility: hidden;">Showing</p>
+			</div>
+		{% endfor %}
+	
+		</div>
+		
+		{% for key, tables in dataframe_collection.items() %}	
+			<div class=author_name id='{{key}}' style="display:none">
+				<h1 text-color:gray>{{key}}</h1>
+					<div class="tablehor">
+						{{ tables.to_html()|safe }}
+					</div>
+				<div class=stat style="text-align:center ; display:none">	
+					<p>number_of_articles : {{number_of_articles[key]}}</p>
+					<p>mention_in_title : {{mention_in_title[key]}}</p>
+					<p>mention_in_fulltext : {{mention_in_fulltext[key]}}</p>
+				</div>
+			</div>
+		{% endfor %}
+		
+		
+	<footer>
+		<div style="padding-top:70px">This is the end of the page</div>
+	</footer>
+		<script>
+			function myFunction(key) {
+				console.log(key);
+				var x = document.getElementById(key);
+				if (x.style.display === "none") {
+					x.style.display = "block";
+					} else {
+					x.style.display = "none";}
+					}
+			
+			function submitButtonStyle(for_loop_count) {
+				console.log(for_loop_count);
+				var x = document.getElementById(for_loop_count);
+				if (x.style.visibility === "visible") {
+					x.style.visibility = "hidden";
+					} else {
+					x.style.visibility = "visible";}
+        			}
+			
+			function show_stat(get_stat){
+				console.log("Get_stat : ",get_stat);
+				if (get_stat === "T"){
+					var x = document.getElementsByClassName("stat");
+					for (var k=0; k<x.length; k++){
+    					x[k].style.display = "block";}
+    					}
+    				}
+			
+			var s=document.getElementsByTagName('td');
+			
+			function highlight(text){
+				for (var k=0; k<s.length ; k++){
+    				html = s[k].innerHTML;
+    				re = new RegExp(text,'g');
+    				if (re.test(html)){
+    					html = html.replace(re,'<span class="highlight-text", style="background-color: red">'+text+'</span>');}
+    				s[k].innerHTML = html;}
+        			}
+		    var col_for_full_text = document.querySelectorAll('td:nth-child(9)')
+            function display_n_char_before_and_after(){
+                for(var number_of_row = 0; number_of_row < col_for_full_text.length; number_of_row ++){
+                    var return_str = ''
+                    var str = col_for_full_text[number_of_row].innerHTML
+                        {% for key, tables in dataframe_collection.items() %}	
+                            var name = '{{key}}'
+                            var len_of_name = name.length
+                            var char_pos = str.indexOf(name)
+                            while(char_pos >= 0){
+                                if (char_pos - 5 >= 0){
+                                    var start_pos = char_pos - 5
+                                    return_str = return_str + '......' + str.substr(start_pos,len_of_name + 10) + '......' +'<br><br>'
+                                    }
+                                else{
+                                    var start_pos = 0
+                                    return_str = return_str + '......' + str.substr(start_pos,len_of_name + char_pos + 5) + '......' +'<br><br>'
+                                    }
+                                char_pos =  str.indexOf(name, char_pos + 1)
+                                }
+                       {% endfor %} 
+                if(return_str.length > 0){
+                   document.querySelectorAll('td:nth-child(9)')[number_of_row].innerHTML = return_str}
+                          }
+                    }
+           
+           function checkSpcialChar(event){
+            if(!((event.keyCode >= 65) && (event.keyCode <= 90) || (event.keyCode >= 97) && (event.keyCode <= 122) || (event.keyCode >= 48) && (event.keyCode <= 57) || (event.keyCode >= 44) && (event.keyCode <= 45))){
+               event.returnValue = false;
+               return;
+               }
+               event.returnValue = true;
+               }
+                    	
+			display_n_char_before_and_after()
+       
+    		{% for key, tables in dataframe_collection.items() %}	
+		
+    				highlight('{{key}}')
+    		{% endfor %}
+            
+		
+		</script>
+		
+	</body>
+</html>
+

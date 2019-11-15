@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+
+<html>
+	<head>	
+		<meta charset="UTF-8">
+		<title>~~ Search info from hklit ~~</title>
+		<script type="text/javascript">
+             function checkSpcialChar(event){
+                if(!((event.keyCode >= 65) && (event.keyCode <= 90) || (event.keyCode >= 97) && (event.keyCode <= 122) || (event.keyCode >= 48) && (event.keyCode <= 57))){
+                   event.returnValue = false;
+                   return;
+                }
+                event.returnValue = true;
+             }
+          </script>
+		<link rel= "stylesheet" type="text/css" href="{{ url_for('static',filename='css/style_2019_11_05_09_30.css') }}">
+	</head>
+	<body>
+    	<div id='wrapper'>
+    	
+    		<div class=top-container>
+    			<h1>Search Page</h1>
+    		</div>
+            
+            <div id='content'>
+            
+        		<form class = "input_form" method="POST" action = "/send">
+        			 搜尋內容: (Please do not include special character such as *, (, ), + ,...... here. Only , and - is allowed!<br> <input type="text" name="author_name" minlength="2" onkeypress="return checkSpcialChar(event)" required ><br><br>
+        			 Where to search:<br> 
+        			 <input type="radio" name="search_field" value="author" checked required>Author name<br> 
+        			 <input type="radio" name="search_field" value="content" required> Title and full text<br><br>
+        			 
+        			 Get statistics?:<br> 
+        			 <input type="radio" name="get_stat" value="T" checked required>Yes<br> 
+        			 <input type="radio" name="get_stat" value="F" required> No<br><br>
+        			 
+        			 Get other name for the author?:<br> 
+        			 <input type="radio" name="get_name_list" value="T" checked required>Yes<br> 
+        			 <input type="radio" name="get_name_list" value="F" required> No<br><br>
+        			 
+        			 Separate result for each author name?:<br> 
+        			 <input type="radio" name="separte_name" value="T" checked required>Yes<br> 
+        			 <input type="radio" name="separte_name" value="F" required> No<br><br>
+        			 <input type="submit" value="Submit">
+        		</form>
+        	</div>
+        	
+    		<div id='footer'>
+    			<div style="padding-top:25px">This is the end of the page</div>
+    		</div>
+    	
+    	</div>
+		<script>
+           function checkSpcialChar(event){
+            if(!((event.keyCode >= 65) && (event.keyCode <= 90) || (event.keyCode >= 97) && (event.keyCode <= 122) || (event.keyCode >= 48) && (event.keyCode <= 57) || (event.keyCode >= 44) && (event.keyCode <= 45))){
+               event.returnValue = false;
+               return;
+               }
+               event.returnValue = true;
+               }
+		</script>
+	</body>
+</html>
